@@ -1,0 +1,30 @@
+#!/sbin/openrc-run
+
+depend() {
+    need localmount
+    after modules device-mapper
+}
+
+start() {
+    modprobe fuse
+    ebegin "Mounting GameZIP : UnionFS"
+    unionfs /root/base /var/www/localhost/htdocs -o allow_other
+    eend $? || return 1
+
+    ebegin "Mounting GameZIP : AVFS"
+    avfsd /root/.avfs -o allow_other,umask=002
+    eend $? || return 1
+}
+
+stop() {
+    # Flush writes to disk
+    sync
+
+    ebegin "Unmounting GameZIP UnionFS"
+    umount /var/www/localhost/htdocs
+    eend $? || return 1
+
+    ebegin "Unmounting GameZIP AVFS"
+    fusermount -u -z /root/.avfs
+    eend $? || return 1
+}

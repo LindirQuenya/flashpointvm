@@ -1,5 +1,19 @@
 #!/bin/sh
 
+# disable filesystem checking (no e2fsprogs)
+sed -i 's/1$/0/' /etc/fstab
+
+# setup networking
+echo 'flashpointvm' >/etc/hostname
+cat << 'EOF' >/etc/network/interfaces
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+	hostname flashpointvm
+EOF
+
 # setup required repos
 echo 'https://dl-cdn.alpinelinux.org/alpine/edge/main' >/etc/apk/repositories
 echo 'https://dl-cdn.alpinelinux.org/alpine/edge/community' >>/etc/apk/repositories
@@ -30,39 +44,37 @@ chmod -R 755 /root/base
 rm /var/www/localhost/htdocs/index.html
 
 # setup apache
-rc-update add apache2 # run apache2 on startup
+rc-update add apache2 default # run apache2 on startup
 echo 'apache ALL=(ALL) NOPASSWD: ALL' >>/etc/sudoers
 sed -i 's/#LoadModule rewrite_module/LoadModule rewrite_module/g' /etc/apache2/httpd.conf
 sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/httpd.conf
 sed -i 's/DirectoryIndex index.html/DirectoryIndex index.html index.htm index.php/g' /etc/apache2/httpd.conf
 sed -i '/LogFormat.*common$/a\    LogFormat "%>s %r" flashpoint' /etc/apache2/httpd.conf
-sed -i 's/access.log combined/access.log flashpoint env=!dontlog/g' /etc/apache2/httpd.conf
+sed -i 's|logs/access.log combined|/dev/ttyS0 flashpoint env=!dontlog|g' /etc/apache2/httpd.conf
 sed -i '/INCLUDES.*shtml$/a\    AddType x-world/x-xvr .xvr' /etc/apache2/httpd.conf
 sed -i '/INCLUDES.*shtml$/a\    AddType x-world/x-svr .svr' /etc/apache2/httpd.conf
 sed -i '/INCLUDES.*shtml$/a\    AddType x-world/x-vrt .vrt' /etc/apache2/httpd.conf
 sed -i '/INCLUDES.*shtml$/a\    AddType application/x-httpd-php .phtml' /etc/apache2/httpd.conf
+echo 'ServerName flashpointvm' >>/etc/apache2/httpd.conf
 echo 'SetEnv force-response-1.0' >>/etc/apache2/httpd.conf # required for certain Shockwave games, thanks Tomy
 echo 'SetEnvIf Remote_Addr "::1" dontlog' >>/etc/apache2/httpd.conf # disable logging of Apache's dummy connections
 echo 'ProxyPreserveHost On' >>/etc/apache2/httpd.conf # keep "Host" header when proxying requests to legacy server
 
 # hack: fix mime types for requests from legacy server
 sed -i 's/exe dll com bat msi/exe dll bat msi/g' /etc/apache2/mime.types
-sed -i 's:application/vnd.lotus-organizer:# application/vnd.lotus-organizer:g' /etc/apache2/mime.types
+sed -i 's|application/vnd.lotus-organizer|# application/vnd.lotus-organizer|g' /etc/apache2/mime.types
 
 # setup gamezip service
-cat << 'EOF' >/root/gamezip
-#!/bin/sh
-modprobe fuse
-unionfs /root/base /var/www/localhost/htdocs -o allow_other
 mkdir /root/.avfs
-avfsd /root/.avfs -o allow_other,umask=002
-EOF
-cat << 'EOF' >/etc/init.d/gamezip
-#!/sbin/openrc-run
-command="/root/gamezip"
-command_background=true
-pidfile="/run/${RC_SVNAME}.pid"
-EOF
-chmod +x /root/gamezip /etc/init.d/gamezip
-rc-update add gamezip
+cp /mnt/gamezip /etc/init.d
+rc-update add gamezip default
+
+# modify apache2 service dependencies
+sed -i 's/need/need gamezip/' /etc/init.d/apache2
+sed -i 's/after.*/after */' /etc/init.d/apache2
+
+# cleanup
+rm -rf /tmp/* /var/cache/apk/*
+dd if=/dev/zero of=/EMPTY bs=1M
+rm -f /EMPTY
 echo Done!
