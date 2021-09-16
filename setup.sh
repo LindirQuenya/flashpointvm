@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# write commit hash
+if [ "$COMMIT_HASH" ]; then
+	echo "$COMMIT_HASH" >/etc/release
+fi
+
 # disable filesystem checking (no e2fsprogs)
 sed -i 's/1$/0/' /etc/fstab
 

@@ -10,8 +10,10 @@ if ! command -v qemu-img >/dev/null; then
 	echo "Please ensure qemu-utils is installed"
 	exit 1
 fi
+COMMIT_HASH=$(git rev-parse HEAD 2>/dev/null)
 export APK_TOOLS_URI
 export APK_TOOLS_SHA256
+export COMMIT_HASH
 tmp=$(mktemp -u /tmp/alpine.XXXXXX)
 wget -qO- "$ALPINE_MAKEVM" | sh /dev/stdin -f qcow2 -c "$tmp" setup.sh \
 && echo Shrinking image, please wait \
