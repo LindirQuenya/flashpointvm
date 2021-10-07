@@ -78,7 +78,28 @@ rc-update add gamezip default
 sed -i 's/need/need gamezip/' /etc/init.d/apache2
 sed -i 's/after.*/after */' /etc/init.d/apache2
 
+# Remove unneeded kernel modules.
+# First, get a list of the needed ones. TODO: change this to FlashpointProject/flashpointvm
+wget https://raw.githubusercontent.com/LindirQuenya/flashpointvm/master/needed_mods.txt -O root/needed_mods.txt
+# Move to the right directory. We don't know kernel version, so we have to use a wildcard.
+# If there is more than one kernel installed, we're done for.
+cd /lib/modules/*/kernel/
+# For each currently-installed module, (syntax modified from https://askubuntu.com/a/830791)
+for i in $(find . -type f); do
+  # Check if that module is not on the list of needed ones.
+  # Btw, my list of needed ones might not be the bare minimum. I just stopped removing modules when it broke.
+  if ! grep -qxFe "$i" /root/needed_mods.txt; then
+    # If it's not on the list, remove it, and echo a nice message.
+    echo "Deleting module: $i"
+    rm "$i"
+  fi
+done
+
+# build tools aren't needed anymore, remove them.
+apk del build-base fuse-dev git
+
 # cleanup
+rm /root/needed_mods.txt
 rm -rf /tmp/* /var/cache/apk/*
 dd if=/dev/zero of=/EMPTY bs=1M
 rm -f /EMPTY
