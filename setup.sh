@@ -78,9 +78,6 @@ rc-update add gamezip default
 sed -i 's/need/need gamezip/' /etc/init.d/apache2
 sed -i 's/after.*/after */' /etc/init.d/apache2
 
-# remove build-time dependencies
-apk del build-base fuse-dev git
-
 # cleanup
 rm -rf /tmp/* /var/cache/apk/*
 dd if=/dev/zero of=/EMPTY bs=1M
