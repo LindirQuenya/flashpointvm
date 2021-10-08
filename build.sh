@@ -17,6 +17,6 @@ export COMMIT_HASH
 tmp=$(mktemp -u /tmp/alpine.XXXXXX)
 wget -qO- "$ALPINE_MAKEVM" | sh /dev/stdin -f qcow2 -c "$tmp" setup.sh \
 && echo Shrinking image, please wait \
-&& qemu-img convert -O qcow2 "$tmp" "$1" \
+&& qemu-img convert -c -O qcow2 "$tmp" "$1" \
 && [ $SUDO_USER ] && chown "$SUDO_USER": "$1"
 rm "$tmp"
