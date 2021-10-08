@@ -79,8 +79,8 @@ sed -i 's/need/need gamezip/' /etc/init.d/apache2
 sed -i 's/after.*/after */' /etc/init.d/apache2
 
 # Remove unneeded kernel modules.
-# First, get a list of the needed ones. TODO: change this to FlashpointProject/flashpointvm
-wget https://raw.githubusercontent.com/LindirQuenya/flashpointvm/master/needed_mods.txt -O /root/needed_mods.txt
+# First, get a list of the needed ones.
+wget https://raw.githubusercontent.com/FlashpointProject/flashpointvm/master/needed_mods.txt -O /root/needed_mods.txt
 # Move to the right directory. We don't know kernel version, so we have to use a wildcard.
 # If there is more than one kernel installed, we're done for.
 cd /lib/modules/*/kernel/
