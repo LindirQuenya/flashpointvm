@@ -1,5 +1,5 @@
 #!/bin/sh
-qemu-system-i386 $QEMU_EXTRA_ARGS -display none -m 512 \
+qemu-system-i386 $QEMU_EXTRA_ARGS -display none -m 128 \
 -net 'nic,model=virtio-net-pci' -net 'user,hostfwd=tcp::22500-:80' \
 -monitor 'tcp:localhost:4445,server,nowait' -drive 'file=alpine.qcow2,if=virtio' &
 pid=$!
