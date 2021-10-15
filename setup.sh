@@ -78,6 +78,14 @@ rc-update add gamezip default
 sed -i 's/need/need gamezip/' /etc/init.d/apache2
 sed -i 's/after.*/after */' /etc/init.d/apache2
 
+# Remove disabled apache modules.
+# Move to the right directory.
+cd /usr/lib/apache2/
+# We get a list of disabled modules from the commented LoadModule lines in httpd.conf
+# Format: "LoadModule some_module modules/mod_some.so" => Module is at /usr/lib/apache2/mod_some.so
+# We want the part after the slash. Then we send it all to rm. Down the drain it goes!
+cat /etc/apache2/httpd.conf | grep LoadModule | grep \# | cut -d '/' -f2 | xargs rm
+
 # Remove unneeded kernel modules.
 # First, get a list of the needed ones.
 wget https://raw.githubusercontent.com/FlashpointProject/flashpointvm/master/needed_mods.txt -O /root/needed_mods.txt
