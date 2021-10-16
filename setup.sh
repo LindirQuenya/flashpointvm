@@ -82,11 +82,12 @@ sed -i 's/after.*/after */' /etc/init.d/apache2
 # Move to the right directory.
 cd /usr/lib/apache2/
 # First, get a list of uncommented modules. (Syntax explanation later.)
-cat /etc/apache2/httpd.conf /etc/apache2/conf.d/*.conf | grep LoadModule | grep -v \# | cut -d '/' -f2 > /root/uncommented_apache_mods.txt
+cat /etc/apache2/httpd.conf /etc/apache2/conf.d/*.conf | grep 'LoadModule.*so$' | grep -v \# | cut -d '/' -f2 > /root/uncommented_apache_mods.txt
 # We get a list of disabled modules from the commented LoadModule lines in httpd.conf
 # Format: "LoadModule some_module modules/mod_some.so" => Module is at /usr/lib/apache2/mod_some.so
+# The grep translates to: anything, then 'LoadModule', then anything, then 'so' at the end of the line.
 # We want the part after the slash. Then we check that it's not also somewhere else, uncommented.
-for i in $(cat /etc/apache2/httpd.conf /etc/apache2/conf.d/*.conf | grep LoadModule | grep \# | cut -d '/' -f2); do
+for i in $(cat /etc/apache2/httpd.conf /etc/apache2/conf.d/*.conf | grep 'LoadModule.*so$' | grep \# | cut -d '/' -f2); do
   # Check that the module isn't also loaded uncommented somewhere else. (Looking at you, mod_negotiation.)
   if ! grep -qxFe "$i" /root/uncommented_apache_mods.txt; then
     echo Deleting apache module: /usr/lib/apache2/"$i"
@@ -114,6 +115,8 @@ done
 
 # build tools aren't needed anymore, remove them.
 apk del build-base fuse-dev git
+# Other components that we don't need.
+apk del php-openssl php-pdo_sqlite
 
 # cleanup
 rm /root/needed_mods.txt
