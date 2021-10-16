@@ -81,10 +81,19 @@ sed -i 's/after.*/after */' /etc/init.d/apache2
 # Remove disabled apache modules.
 # Move to the right directory.
 cd /usr/lib/apache2/
+# First, get a list of uncommented modules. (Syntax explanation later.)
+cat /etc/apache2/httpd.conf /etc/apache2/conf.d/*.conf | grep LoadModule | grep -v \# | cut -d '/' -f2 > /root/uncommented_apache_mods.txt
 # We get a list of disabled modules from the commented LoadModule lines in httpd.conf
 # Format: "LoadModule some_module modules/mod_some.so" => Module is at /usr/lib/apache2/mod_some.so
-# We want the part after the slash. Then we send it all to rm. Down the drain it goes!
-cat /etc/apache2/httpd.conf | grep LoadModule | grep \# | cut -d '/' -f2 | xargs rm
+# We want the part after the slash. Then we check that it's not also somewhere else, uncommented.
+for i in $(cat /etc/apache2/httpd.conf /etc/apache2/conf.d/*.conf | grep LoadModule | grep \# | cut -d '/' -f2); do
+  # Check that the module isn't also loaded uncommented somewhere else. (Looking at you, mod_negotiation.)
+  if ! grep -qxFe "$i" /root/uncommented_apache_mods.txt; then
+    echo Deleting apache module: /usr/lib/apache2/"$i"
+    # Using -f turns off error messages if a file isn't found.
+    rm -f /usr/lib/apache2/"$i"
+  fi
+done
 
 # Remove unneeded kernel modules.
 # First, get a list of the needed ones.
@@ -108,6 +117,7 @@ apk del build-base fuse-dev git
 
 # cleanup
 rm /root/needed_mods.txt
+rm /root/uncommented_apache_mods.txt
 rm -rf /tmp/* /var/cache/apk/*
 dd if=/dev/zero of=/EMPTY bs=1M
 rm -f /EMPTY
