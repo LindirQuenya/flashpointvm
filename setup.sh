@@ -98,7 +98,7 @@ done
 
 # Remove unneeded kernel modules.
 # First, get a list of the needed ones.
-wget https://raw.githubusercontent.com/FlashpointProject/flashpointvm/master/needed_mods.txt -O /root/needed_mods.txt
+cp /mnt/needed_mods.txt /root/needed_mods.txt
 # Move to the right directory. We don't know kernel version, so we have to use a wildcard.
 # If there is more than one kernel installed, we're done for.
 cd /lib/modules/*/kernel/
