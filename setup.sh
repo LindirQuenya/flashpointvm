@@ -115,8 +115,6 @@ done
 
 # build tools aren't needed anymore, remove them.
 apk del build-base fuse-dev git
-# Other components that we don't need.
-apk del php-openssl php-pdo_sqlite
 
 # cleanup
 rm /root/needed_mods.txt
