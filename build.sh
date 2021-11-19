@@ -15,8 +15,12 @@ export APK_TOOLS_URI
 export APK_TOOLS_SHA256
 export COMMIT_HASH
 tmp=$(mktemp -u /tmp/alpine.XXXXXX)
+# Triple conversion was giving more consistent results, not entirely sure why.
 wget -qO- "$ALPINE_MAKEVM" | sh /dev/stdin -f qcow2 -c "$tmp" setup.sh \
 && echo Shrinking image, please wait \
-&& qemu-img convert -O qcow2 "$tmp" "$1" \
+&& qemu-img convert -c -O qcow2 "$tmp" "start_$1" \
+&& qemu-img convert -c -O qcow2 "start_$1" "mid_$1" \
+&& qemu-img convert -c -O qcow2 "mid_$1" "$1" \
+&& rm "start_$1" "mid_$1" \
 && [ $SUDO_USER ] && chown "$SUDO_USER": "$1"
 rm "$tmp"

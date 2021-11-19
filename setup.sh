@@ -78,7 +78,47 @@ rc-update add gamezip default
 sed -i 's/need/need gamezip/' /etc/init.d/apache2
 sed -i 's/after.*/after */' /etc/init.d/apache2
 
+# Remove disabled apache modules.
+# Move to the right directory.
+cd /usr/lib/apache2/
+# First, get a list of uncommented modules. (Syntax explanation later.)
+cat /etc/apache2/httpd.conf /etc/apache2/conf.d/*.conf | grep 'LoadModule.*so$' | grep -v \# | cut -d '/' -f2 > /root/uncommented_apache_mods.txt
+# We get a list of disabled modules from the commented LoadModule lines in httpd.conf
+# Format: "LoadModule some_module modules/mod_some.so" => Module is at /usr/lib/apache2/mod_some.so
+# The grep translates to: anything, then 'LoadModule', then anything, then 'so' at the end of the line.
+# We want the part after the slash. Then we check that it's not also somewhere else, uncommented.
+for i in $(cat /etc/apache2/httpd.conf /etc/apache2/conf.d/*.conf | grep 'LoadModule.*so$' | grep \# | cut -d '/' -f2); do
+  # Check that the module isn't also loaded uncommented somewhere else. (Looking at you, mod_negotiation.)
+  if ! grep -qxFe "$i" /root/uncommented_apache_mods.txt; then
+    echo Deleting apache module: /usr/lib/apache2/"$i"
+    # Using -f turns off error messages if a file isn't found.
+    rm -f /usr/lib/apache2/"$i"
+  fi
+done
+
+# Remove unneeded kernel modules.
+# First, get a list of the needed ones.
+cp /mnt/needed_mods.txt /root/needed_mods.txt
+# Move to the right directory. We don't know kernel version, so we have to use a wildcard.
+# If there is more than one kernel installed, we're done for.
+cd /lib/modules/*/kernel/
+# For each currently-installed module, (syntax modified from https://askubuntu.com/a/830791)
+for i in $(find . -type f); do
+  # Check if that module is not on the list of needed ones.
+  # Btw, my list of needed ones might not be the bare minimum. I just stopped removing modules when it broke.
+  if ! grep -qxFe "$i" /root/needed_mods.txt; then
+    # If it's not on the list, remove it, and echo a nice message.
+    echo "Deleting module: $i"
+    rm "$i"
+  fi
+done
+
+# build tools aren't needed anymore, remove them.
+apk del build-base fuse-dev git
+
 # cleanup
+rm /root/needed_mods.txt
+rm /root/uncommented_apache_mods.txt
 rm -rf /tmp/* /var/cache/apk/*
 dd if=/dev/zero of=/EMPTY bs=1M
 rm -f /EMPTY
