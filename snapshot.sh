@@ -11,3 +11,8 @@ done
 echo 'apache is ready .. snapshot in 10 seconds' && sleep 10
 echo 'savevm quick' | nc -q1 -w5 127.0.0.1 4445 >/dev/null
 kill -TERM "$pid"
+
+# Convert the image one last time, so that the snapshot data will get compressed too.
+mv "alpine.qcow2" "alpine_temp.qcow2"
+qemu-img convert -c -O qcow2 "alpine_temp.qcow2" "alpine.qcow2"
+rm "alpine_temp.qcow2"
