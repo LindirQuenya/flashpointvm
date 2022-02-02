@@ -120,7 +120,7 @@ for i in $(find . -type f); do
 done
 
 # build tools aren't needed anymore, remove them.
-apk del build-base fuse-dev git
+apk del build-base fuse-dev git libarchive-dev
 
 # cleanup
 rm /root/needed_mods.txt
