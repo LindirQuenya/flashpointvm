@@ -42,7 +42,7 @@ mkdir -p '/usr/local/sbin'
 g++ -O3 src/main.cc `pkg-config libarchive fuse --cflags --libs` -o /usr/local/sbin/fuse-archive
 
 # install fuzzyfs
-git clone https://github.com/XXLuigiMario/fuzzyfs.git /tmp/fuzzyfs
+git clone -b file-descriptors https://github.com/LindirQuenya/fuzzyfs.git /tmp/fuzzyfs
 cd /tmp/fuzzyfs
 make && make install
 
