@@ -24,16 +24,22 @@ echo 'https://dl-cdn.alpinelinux.org/alpine/edge/main' >/etc/apk/repositories
 echo 'https://dl-cdn.alpinelinux.org/alpine/edge/community' >>/etc/apk/repositories
 echo 'https://dl-cdn.alpinelinux.org/alpine/edge/testing' >>/etc/apk/repositories
 apk update
-apk add apache2 apache2-proxy php-apache2 fuse avfs unionfs-fuse sudo
+apk add apache2 apache2-proxy php-apache2 fuse unionfs-fuse sudo libarchive libgcc libstdc++
 sed -i 's/DEFAULT menu.c32/DEFAULT virt/g' /boot/extlinux.conf # boot directly into alpine
 
 # install dev dependencies
-apk add fuse-dev build-base git
+apk add fuse-dev build-base git libarchive-dev
 
 # install php packages
 apk add php-json php-openssl php-session php-pdo php-pdo_sqlite php-simplexml php-xml
 wget -O/tmp/vendor.tar https://github.com/FlashpointProject/svcomposer/releases/download/18c0ebd/vendor.tar
 tar -xvf /tmp/vendor.tar -C /var/www/localhost --exclude='vendor/silexlabs/amfphp/doc'
+
+# Install fuse-archive - maybe better than avfs?
+git clone https://github.com/google/fuse-archive.git /tmp/fuse-archive
+cd /tmp/fuse-archive
+mkdir -p '/usr/local/sbin'
+g++ -O3 src/main.cc `pkg-config libarchive fuse --cflags --libs` -o /usr/local/sbin/fuse-archive
 
 # install fuzzyfs
 git clone https://github.com/XXLuigiMario/fuzzyfs.git /tmp/fuzzyfs
@@ -114,7 +120,7 @@ for i in $(find . -type f); do
 done
 
 # build tools aren't needed anymore, remove them.
-apk del build-base fuse-dev git
+apk del build-base fuse-dev git libarchive-dev
 
 # cleanup
 rm /root/needed_mods.txt
