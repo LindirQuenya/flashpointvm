@@ -57,25 +57,7 @@ rm /var/www/localhost/htdocs/index.html
 # setup apache
 rc-update add apache2 default # run apache2 on startup
 echo 'apache ALL=(ALL) NOPASSWD: ALL' >>/etc/sudoers
-sed -i 's/#LoadModule rewrite_module/LoadModule rewrite_module/g' /etc/apache2/httpd.conf
-sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/httpd.conf
-sed -i 's/DirectoryIndex index.html/DirectoryIndex index.html index.htm index.php/g' /etc/apache2/httpd.conf
-sed -i '/LogFormat.*common$/a\    LogFormat "%>s %r" flashpoint' /etc/apache2/httpd.conf
-sed -i 's|logs/access.log combined|/dev/ttyS0 flashpoint env=!dontlog|g' /etc/apache2/httpd.conf
-sed -i '/INCLUDES.*shtml$/a\    AddType x-world/x-xvr .xvr' /etc/apache2/httpd.conf
-sed -i '/INCLUDES.*shtml$/a\    AddType x-world/x-svr .svr' /etc/apache2/httpd.conf
-sed -i '/INCLUDES.*shtml$/a\    AddType x-world/x-vrt .vrt' /etc/apache2/httpd.conf
-sed -i '/INCLUDES.*shtml$/a\    AddType application/x-httpd-php .phtml' /etc/apache2/httpd.conf
-echo 'ServerName flashpointvm' >>/etc/apache2/httpd.conf
-echo 'SetEnv force-response-1.0' >>/etc/apache2/httpd.conf # required for certain Shockwave games, thanks Tomy
-echo 'SetEnvIf Remote_Addr "::1" dontlog' >>/etc/apache2/httpd.conf # disable logging of Apache's dummy connections
-echo 'ProxyPreserveHost On' >>/etc/apache2/httpd.conf # keep "Host" header when proxying requests to legacy server
-echo '<FilesMatch "\.(blz)$">' >>/etc/apache2/httpd.conf # work around buggy emblaze plugin
-echo 'Header unset ETag' >>/etc/apache2/httpd.conf
-echo '</FilesMatch>' >>/etc/apache2/httpd.conf
-# hack: fix mime types for requests from legacy server
-sed -i 's/exe dll com bat msi/exe dll bat msi/g' /etc/apache2/mime.types
-sed -i 's|application/vnd.lotus-organizer|# application/vnd.lotus-organizer|g' /etc/apache2/mime.types
+cp /mnt/httpd.conf /etc/apache2/httpd.conf
 
 # setup gamezip service
 mkdir /root/.avfs
