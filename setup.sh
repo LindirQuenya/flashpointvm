@@ -58,6 +58,7 @@ rm /var/www/localhost/htdocs/index.html
 rc-update add apache2 default # run apache2 on startup
 echo 'apache ALL=(ALL) NOPASSWD: ALL' >>/etc/sudoers
 cp /mnt/httpd.conf /etc/apache2/httpd.conf
+cp /mnt/mime.types /etc/apache2/mime.types
 
 # setup gamezip service
 mkdir /root/.avfs
