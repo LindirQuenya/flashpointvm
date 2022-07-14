@@ -39,7 +39,7 @@ tar -xvf /tmp/vendor.tar -C /var/www/localhost --exclude='vendor/silexlabs/amfph
 git clone https://github.com/google/fuse-archive.git /tmp/fuse-archive
 cd /tmp/fuse-archive
 mkdir -p '/usr/local/sbin'
-g++ -O3 src/main.cc `pkg-config libarchive fuse --cflags --libs` -o /usr/local/sbin/fuse-archive
+g++ -O3 src/main.cc `pkg-config libarchive fuse --cflags --libs` -o "/usr/local/bin/fuse-archive"
 
 # Install fpmountd
 wget -O "/usr/local/bin/fpmountd" "https://github.com/FlashpointProject/flashpointvm-mount-daemon/releases/download/e669fd4/flashpointvm-mount-daemon_i686-unknown-linux-musl_qemu"
