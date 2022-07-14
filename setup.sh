@@ -35,11 +35,15 @@ apk add php-json php-openssl php-session php-pdo php-pdo_sqlite php-simplexml ph
 wget -O/tmp/vendor.tar https://github.com/FlashpointProject/svcomposer/releases/download/18c0ebd/vendor.tar
 tar -xvf /tmp/vendor.tar -C /var/www/localhost --exclude='vendor/silexlabs/amfphp/doc'
 
-# Install fuse-archive - maybe better than avfs?
+# Install fuse-archive
 git clone https://github.com/google/fuse-archive.git /tmp/fuse-archive
 cd /tmp/fuse-archive
 mkdir -p '/usr/local/sbin'
 g++ -O3 src/main.cc `pkg-config libarchive fuse --cflags --libs` -o /usr/local/sbin/fuse-archive
+
+# Install fpmountd
+wget -O "/usr/local/bin/fpmountd" "https://github.com/FlashpointProject/flashpointvm-mount-daemon/releases/download/e669fd4/flashpointvm-mount-daemon_i686-unknown-linux-musl_qemu"
+chmod +x "/usr/local/bin/fpmountd"
 
 # install fuzzyfs
 git clone https://github.com/XXLuigiMario/fuzzyfs.git /tmp/fuzzyfs
@@ -56,7 +60,6 @@ rm /var/www/localhost/htdocs/index.html
 
 # setup apache
 rc-update add apache2 default # run apache2 on startup
-echo 'apache ALL=(ALL) NOPASSWD: ALL' >>/etc/sudoers
 sed -i 's/#LoadModule rewrite_module/LoadModule rewrite_module/g' /etc/apache2/httpd.conf
 sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/httpd.conf
 sed -i 's/DirectoryIndex index.html/DirectoryIndex index.html index.htm index.php/g' /etc/apache2/httpd.conf
@@ -78,9 +81,12 @@ sed -i 's/exe dll com bat msi/exe dll bat msi/g' /etc/apache2/mime.types
 sed -i 's|application/vnd.lotus-organizer|# application/vnd.lotus-organizer|g' /etc/apache2/mime.types
 
 # setup gamezip service
-mkdir /root/.avfs
 cp /mnt/gamezip /etc/init.d
 rc-update add gamezip default
+
+# setup fpmountd service
+cp /mnt/fpmountd /etc/init.d
+rc-update add fpmountd default
 
 # modify apache2 service dependencies
 sed -i 's/need/need gamezip/' /etc/init.d/apache2
