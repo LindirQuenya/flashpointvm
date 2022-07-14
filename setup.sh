@@ -24,7 +24,7 @@ echo 'https://dl-cdn.alpinelinux.org/alpine/edge/main' >/etc/apk/repositories
 echo 'https://dl-cdn.alpinelinux.org/alpine/edge/community' >>/etc/apk/repositories
 echo 'https://dl-cdn.alpinelinux.org/alpine/edge/testing' >>/etc/apk/repositories
 apk update
-apk add apache2 apache2-proxy php-apache2 fuse unionfs-fuse sudo libarchive libgcc libstdc++
+apk add apache2 apache2-proxy php-apache2 fuse unionfs-fuse libarchive libgcc libstdc++
 sed -i 's/DEFAULT menu.c32/DEFAULT virt/g' /boot/extlinux.conf # boot directly into alpine
 
 # install dev dependencies
