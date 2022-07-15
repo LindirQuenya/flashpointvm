@@ -7,6 +7,7 @@ fi
 
 # disable filesystem checking (no e2fsprogs)
 sed -i 's/1$/0/' /etc/fstab
+echo tmpfs /tmp tmpfs nosuid,nodev,noatime 0 0 >> /etc/fstab
 
 # setup networking
 echo 'flashpointvm' >/etc/hostname
