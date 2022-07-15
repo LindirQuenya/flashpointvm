@@ -33,7 +33,7 @@ jobs:
         release_name: ${{ steps.prepare.outputs.sha_short }}
         draft: false
         prerelease: false
-    - name: Upload release
+    - name: Upload alpine.qcow2
       id: upload_release
       uses: actions/upload-release-asset@v1
       env:
@@ -42,4 +42,14 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./alpine.qcow2
         asset_name: alpine.qcow2
+        asset_content_type: application/octet-stream
+    - name: Upload dummy.qcow2
+      id: upload_release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dummy.qcow2
+        asset_name: dummy.qcow2
         asset_content_type: application/octet-stream
