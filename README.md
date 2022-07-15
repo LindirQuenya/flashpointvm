@@ -9,6 +9,7 @@ In this file, we will go over the structure and organization of this repo, and g
  - [.github/workflows/build.yml](.github/workflows/build.yml): This automates builds of the image.
  - [Makefile](Makefile): This contains comamnds for building and cleaning up the image.
  - [build.sh](build.sh): This is called by the makefile. It gets and runs the scripts from Alpine that create a standard Alpine VM image. It also does post-processing that shrinks the VM image.
+ - [httpd.conf](httpd.conf) and [mime.types](mime.types): Config files for apache.
  - [gamezip](gamezip): This is an openrc service definition. It contains the commands for mounting and unmounting AVFS and UnionFS.
  - [needed_mods.txt](needed_mods.txt): This is a list of all the kernel modules needed for our VM to run. There might be some extras that we don't need still on there. I just stopped removing modules when it broke.
  - [setup.sh](setup.sh): This is run (chroot-ed, I think) inside the base VM image. It sets up all the things we need, and removes the things we don't.
