@@ -34,7 +34,7 @@ jobs:
         draft: false
         prerelease: false
     - name: Upload alpine.qcow2
-      id: upload_release
+      id: upload_alpine
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -44,7 +44,7 @@ jobs:
         asset_name: alpine.qcow2
         asset_content_type: application/octet-stream
     - name: Upload dummy.qcow2
-      id: upload_release
+      id: upload_dummy
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
