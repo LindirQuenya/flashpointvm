@@ -1,9 +1,9 @@
 #!/bin/sh
-rm -f dummy.qcow2
-qemu-img create -f qcow2 dummy.qcow2 1M
+rm -f snapshot.qcow2
+qemu-img create -f qcow2 snapshot.qcow2 1M
 qemu-system-i386 $QEMU_EXTRA_ARGS -display none -m 128 \
 -net 'nic,model=virtio-net-pci' -net 'user,hostfwd=tcp::22500-:80' \
--monitor 'tcp:localhost:4445,server,nowait' -drive 'if=none,format=qcow2,file=dummy.qcow2' \
+-monitor 'tcp:localhost:4445,server,nowait' -drive 'if=none,format=qcow2,file=snapshot.qcow2' \
 -drive 'file=alpine.qcow2,if=virtio' &
 pid=$!
 

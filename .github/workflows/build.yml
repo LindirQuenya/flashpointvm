@@ -43,13 +43,13 @@ jobs:
         asset_path: ./alpine.qcow2
         asset_name: alpine.qcow2
         asset_content_type: application/octet-stream
-    - name: Upload dummy.qcow2
-      id: upload_dummy
+    - name: Upload snapshot.qcow2
+      id: upload_snapshot
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dummy.qcow2
-        asset_name: dummy.qcow2
+        asset_path: ./snapshot.qcow2
+        asset_name: snapshot.qcow2
         asset_content_type: application/octet-stream
