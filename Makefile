@@ -3,4 +3,4 @@ alpine.qcow2: setup.sh
 
 .PHONY: clean
 clean:
-	rm -f alpine.qcow2
+	rm -f alpine.qcow2 snapshot.7z

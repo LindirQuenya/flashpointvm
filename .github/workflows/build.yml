@@ -10,13 +10,13 @@ jobs:
     - uses: actions/checkout@v2.3.4
     - name: Prepare
       id: prepare
-      run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"   
+      run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
     - name: Install dependencies
       run: |
         export DEBIAN_FRONTEND=noninteractive
         sudo add-apt-repository ppa:canonical-server/server-backports \
         && sudo apt-get update \
-        && sudo apt-get -y install qemu-utils qemu-system-x86
+        && sudo apt-get -y install qemu-utils qemu-system-x86 p7zip-full wget make curl unzip
     - name: Install pinned iPXE roms
       run: wget -O/tmp/roms.zip "$IPXE_ROMS" && sudo unzip -o /tmp/roms.zip -d /usr/lib/ipxe/qemu
     - name: Build image
@@ -42,4 +42,14 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./alpine.qcow2
         asset_name: alpine.qcow2
+        asset_content_type: application/octet-stream
+    - name: Upload snapshot
+      id: upload_snapshot
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./snapshot.7z
+        asset_name: snapshot.7z
         asset_content_type: application/octet-stream

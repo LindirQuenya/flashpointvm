@@ -24,4 +24,4 @@ In this file, we will go over the structure and organization of this repo, and g
 
   The sudo on that last command isn't needed if your user has the proper permissions. (e.g. is part of the kvm group)
 
-  To test your newly-built image, copy alpine.qcow2 from this directory to Server/alpine.qcow2 in an existing Flashpoint installation. Options can be adjusted in Data/services.json if needed.
+  To test your newly-built image, copy alpine.qcow2 and snapshot.7z from this directory to the Server/ folder in an existing Flashpoint installation. Options can be adjusted in Data/services.json if needed.
